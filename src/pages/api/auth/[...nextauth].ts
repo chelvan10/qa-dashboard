@@ -1,5 +1,13 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+// Extend the User type to include role
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+}
 
 const allowedDomains = process.env.ALLOWED_DOMAINS?.split(',') || [];
 const adminEmails = [
@@ -7,13 +15,40 @@ const adminEmails = [
   ...(process.env.ADDITIONAL_ADMINS?.split(',') || [])
 ].filter(Boolean);
 
+// Check if we're in demo mode (missing OAuth credentials)
+const isDemoMode = !process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === 'your-google-client-id';
+
 export default NextAuth({
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    // Add more providers here (e.g., Azure AD)
+    // Demo mode provider for testing
+    ...(isDemoMode ? [
+      CredentialsProvider({
+        id: "demo",
+        name: "Demo Login",
+        credentials: {
+          role: { label: "Role", type: "select", options: ["executive", "manager", "team"] }
+        },
+        async authorize(credentials) {
+          // Demo users for testing
+          const demoUsers = {
+            executive: { id: "1", email: "executive@qedemo.com", name: "Executive User", role: "executive" },
+            manager: { id: "2", email: "manager@qedemo.com", name: "Manager User", role: "manager" },
+            team: { id: "3", email: "team@qedemo.com", name: "Team User", role: "team" }
+          };
+          
+          const role = credentials?.role as keyof typeof demoUsers;
+          return demoUsers[role] || null;
+        }
+      })
+    ] : []),
+    
+    // Google OAuth provider (only if credentials are properly configured)
+    ...(!isDemoMode ? [
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      })
+    ] : []),
   ],
   session: {
     strategy: "jwt",
@@ -21,7 +56,12 @@ export default NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
-      // Domain-based access control
+      // In demo mode, always allow sign in
+      if (isDemoMode) {
+        return true;
+      }
+      
+      // Domain-based access control for OAuth
       if (allowedDomains.length > 0 && user.email) {
         const emailDomain = user.email.split('@')[1];
         if (!allowedDomains.includes(emailDomain)) {
@@ -34,9 +74,13 @@ export default NextAuth({
     async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
+        
         // Enhanced role assignment
         if (user?.email) {
-          if (adminEmails.includes(user.email)) {
+          // In demo mode, use the role from user object
+          if (isDemoMode && user.role) {
+            token.role = user.role;
+          } else if (adminEmails.includes(user.email)) {
             token.role = "executive";
           } else if (user.email.includes("manager") || user.email.includes("lead")) {
             token.role = "manager";
