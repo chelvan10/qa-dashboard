@@ -8,10 +8,10 @@ Application Type: Web application
 Name: QE Dashboard Production
 
 Authorized JavaScript Origins:
-https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
 
 Authorized Redirect URIs:
-https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app/api/auth/callback/google
+https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app/api/auth/callback/google
 ```
 
 ### After Creating Credentials:
@@ -27,7 +27,7 @@ Add these exact variables:
 
 ```
 Variable Name: NEXTAUTH_URL
-Value: https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+Value: https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
 Environment: Production
 
 Variable Name: NEXTAUTH_SECRET  
@@ -72,7 +72,7 @@ Environment: Production
 After setting up OAuth and environment variables:
 
 1. ✅ Redeploy your Vercel app (automatic after env var changes)
-2. ✅ Visit: https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+2. ✅ Visit: https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
 3. ✅ Click "Sign in with Google"
 4. ✅ Complete Google OAuth flow
 5. ✅ Verify you land on the dashboard

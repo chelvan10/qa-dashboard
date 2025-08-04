@@ -2,9 +2,9 @@
 
 ## 🔗 **FINAL URL FOR EXTERNAL SHARING**
 
-**🌐 Production URL:** https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+**🌐 Production URL:** https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
 
-**📊 Dashboard Inspector:** https://vercel.com/aris-projects-a3f8f39e/qa-dashboard/7KChtvQTUr7wa5mZSCr5S6pnkt8q
+**📊 Dashboard Inspector:** https://vercel.com/aris-projects-a3f8f39e/qa-dashboard/HCbHmo4svNnJT1yHMMMcruGKnBqx
 
 ---
 
@@ -18,7 +18,7 @@ Add these variables:
 
 ```bash
 # 🔐 AUTHENTICATION
-NEXTAUTH_URL=https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+NEXTAUTH_URL=https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
 NEXTAUTH_SECRET=wYHgJ73K8C/2xV/swwa6Hc+u4BD7QcAV3KfTl532Kmo=
 
 # 🔑 GOOGLE OAUTH (Get from Google Cloud Console)
@@ -40,8 +40,8 @@ NODE_ENV=production
 
 1. **Google Cloud Console:** https://console.cloud.google.com/
 2. **Create OAuth 2.0 Credentials:**
-   - Authorized origins: `https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app`
-   - Redirect URI: `https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app/api/auth/callback/google`
+   - Authorized origins: `https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app`
+   - Redirect URI: `https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app/api/auth/callback/google`
 
 ### 3. Test and Share
 
@@ -51,7 +51,7 @@ NODE_ENV=production
    - Verify role-based access
 
 2. **Share with External Users:**
-   - Send URL: https://qa-dashboard-7xexiatsr-aris-projects-a3f8f39e.vercel.app
+   - Send URL: https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app
    - Users from allowed domains get automatic access
    - Different views based on email/role
 
