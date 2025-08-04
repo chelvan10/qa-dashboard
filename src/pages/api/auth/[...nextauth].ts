@@ -15,8 +15,16 @@ const adminEmails = [
   ...(process.env.ADDITIONAL_ADMINS?.split(',') || [])
 ].filter(Boolean);
 
-// Check if we're in demo mode (missing OAuth credentials)
-const isDemoMode = !process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === 'your-google-client-id';
+// Demo mode detection - check if OAuth credentials are placeholder values
+const isDemoMode = 
+  !process.env.GOOGLE_CLIENT_ID || 
+  !process.env.GOOGLE_CLIENT_SECRET ||
+  process.env.GOOGLE_CLIENT_ID === 'your-google-client-id' ||
+  process.env.GOOGLE_CLIENT_SECRET === 'your-google-client-secret' ||
+  process.env.NODE_ENV === 'development';
+
+console.log('🔍 Demo Mode Status:', isDemoMode);
+console.log('🔑 Google Client ID:', process.env.GOOGLE_CLIENT_ID?.substring(0, 10) + '...');
 
 export default NextAuth({
   providers: [
