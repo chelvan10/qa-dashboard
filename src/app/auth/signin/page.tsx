@@ -1,4 +1,6 @@
 
+"use client";
+
 import { getProviders, signIn, ClientSafeProvider } from "next-auth/react";
 import { useEffect, useState } from "react";
 

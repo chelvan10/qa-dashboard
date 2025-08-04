@@ -2,6 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, jest } from '@jest/globals';
 import Dashboard from '../src/app/dashboard/page';
 
+// Import jest-dom matchers for toBeInTheDocument
+import '@testing-library/jest-dom';
+
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
   getSession: jest.fn(() => Promise.resolve({
