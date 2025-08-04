@@ -23,21 +23,34 @@ export default NextAuth({
     // Demo mode provider for testing
     ...(isDemoMode ? [
       CredentialsProvider({
-        id: "demo",
-        name: "Demo Login",
+        id: "credentials",
+        name: "Demo Account",
         credentials: {
-          role: { label: "Role", type: "select", options: ["executive", "manager", "team"] }
+          email: { label: "Email", type: "email" },
+          password: { label: "Password", type: "password" }
         },
         async authorize(credentials) {
           // Demo users for testing
-          const demoUsers = {
-            executive: { id: "1", email: "executive@qedemo.com", name: "Executive User", role: "executive" },
-            manager: { id: "2", email: "manager@qedemo.com", name: "Manager User", role: "manager" },
-            team: { id: "3", email: "team@qedemo.com", name: "Team User", role: "team" }
-          };
+          const demoUsers = [
+            { id: "1", email: "demo.executive@company.com", password: "executive123", name: "Executive User", role: "executive" },
+            { id: "2", email: "demo.manager@company.com", password: "manager123", name: "Manager User", role: "manager" },
+            { id: "3", email: "demo.team@company.com", password: "team123", name: "Team User", role: "team" }
+          ];
           
-          const role = credentials?.role as keyof typeof demoUsers;
-          return demoUsers[role] || null;
+          const user = demoUsers.find(u => 
+            u.email === credentials?.email && 
+            u.password === credentials?.password
+          );
+          
+          if (user) {
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role
+            };
+          }
+          return null;
         }
       })
     ] : []),

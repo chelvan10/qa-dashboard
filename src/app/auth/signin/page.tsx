@@ -35,8 +35,8 @@ export default function SignIn() {
         <h1 className="text-3xl font-bold mb-6 text-center">Sign in to QE Dashboard</h1>
         
         {/* Demo Mode Section */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-700">Demo Access (Immediate)</h2>
+        <div className="mb-6 border-2 border-green-200 rounded-lg p-4 bg-green-50">
+          <h2 className="text-lg font-semibold mb-4 text-green-800">🚀 Demo Access (Immediate)</h2>
           
           {!showDemoForm ? (
             <div className="space-y-2">
