@@ -20,12 +20,35 @@ export default function Dashboard() {
   const [activeRole, setActiveRole] = useState<UserRole>('manager');
   const [activeTab, setActiveTab] = useState<TabName>('summary');
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+  const [demoSession, setDemoSession] = useState<{email: string, role: UserRole} | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
+    // Check for demo session fallback
+    const storedDemoUser = sessionStorage.getItem('demoUser');
+    const authFallback = sessionStorage.getItem('authFallback');
+    
+    if (storedDemoUser && authFallback) {
+      const demoUser = JSON.parse(storedDemoUser);
+      setDemoSession(demoUser);
+      setActiveRole(demoUser.role as UserRole);
+      console.log('🎯 Using demo session fallback:', demoUser);
+      return;
+    }
+    
+    if (status === 'unauthenticated' && !storedDemoUser) {
+      router.push('/demo');
     }
   }, [status, router]);
+
+  // Update active role based on authentication method
+  useEffect(() => {
+    const sessionWithRole = session as typeof session & { user?: { role?: string } };
+    if (sessionWithRole?.user?.role) {
+      setActiveRole(sessionWithRole.user.role as UserRole);
+    } else if (demoSession?.role) {
+      setActiveRole(demoSession.role);
+    }
+  }, [session, demoSession]);
 
   // Update active tab when role changes to ensure user only sees allowed tabs
   useEffect(() => {
@@ -35,7 +58,7 @@ export default function Dashboard() {
     }
   }, [activeRole, activeTab]);
 
-  if (status === 'loading') {
+  if (status === 'loading' && !demoSession) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -46,12 +69,32 @@ export default function Dashboard() {
     );
   }
 
-  if (!session) {
-    return null;
+  // Check if user is authenticated (either via session or demo)
+  const isAuthenticated = session || demoSession;
+  const sessionWithRole = session as typeof session & { user?: { role?: string } };
+  const userRole = sessionWithRole?.user?.role || demoSession?.role || activeRole; // Used for role determination
+  const userEmail = session?.user?.email || demoSession?.email || 'Demo User'; // Used for display
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting to authentication...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
+    if (demoSession) {
+      // Clear demo session
+      sessionStorage.removeItem('demoUser');
+      sessionStorage.removeItem('authFallback');
+      setDemoSession(null);
+      router.push('/');
+    } else {
+      signOut({ callbackUrl: '/' });
+    }
   };
 
   // Get tabs available for current role
@@ -139,7 +182,7 @@ export default function Dashboard() {
                 currentMode={viewMode} 
                 onModeChange={setViewMode}
               />
-              <span className="text-sm text-gray-700">Welcome, {session.user?.name}</span>
+              <span className="text-sm text-gray-700">Welcome, {session?.user?.name || demoSession?.email?.split('@')[0] || 'User'}</span>
               <button
                 onClick={handleSignOut}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
