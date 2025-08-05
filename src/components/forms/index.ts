@@ -5,6 +5,7 @@ export { QECapabilityForm } from './QECapabilityForm';
 export { NonProdEnvironmentsForm } from './NonProdEnvironmentsForm';
 export { FunctionalTestingForm } from './FunctionalTestingForm';
 export { TestAutomationForm } from './TestAutomationForm';
+export { PerformanceTestingForm } from './PerformanceTestingForm';
 export { SecurityTestingForm } from './SecurityTestingForm';
 
 // Note: Additional forms will be exported as they are implemented

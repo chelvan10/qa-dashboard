@@ -6,6 +6,7 @@ import { QECapabilityForm } from './QECapabilityForm';
 import { NonProdEnvironmentsForm } from './NonProdEnvironmentsForm';
 import { FunctionalTestingForm } from './FunctionalTestingForm';
 import { TestAutomationForm } from './TestAutomationForm';
+import { PerformanceTestingForm } from './PerformanceTestingForm';
 import { SecurityTestingForm } from './SecurityTestingForm';
 
 // Form type definitions
@@ -31,8 +32,8 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
     { id: 'qe-capability', name: 'QE Capability', icon: '🎯', implemented: true },
     { id: 'non-prod-environments', name: 'Non-Prod Environments', icon: '🖥️', implemented: true },
     { id: 'functional-testing', name: 'Functional Testing', icon: '🧪', implemented: true },
-    { id: 'test-automation', name: 'Test Automation', icon: '🤖', implemented: false },
-    { id: 'performance-testing', name: 'Performance Testing', icon: '⚡', implemented: false },
+    { id: 'test-automation', name: 'Test Automation', icon: '🤖', implemented: true },
+    { id: 'performance-testing', name: 'Performance Testing', icon: '⚡', implemented: true },
     { id: 'security-testing', name: 'Security Testing', icon: '🔒', implemented: true },
   ] as const;
 
@@ -47,25 +48,6 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
     onFormChange?.(formType);
   };
 
-  const PlaceholderForm = ({ formName }: { formName: string }) => (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <div className="text-center py-16">
-        <div className="text-6xl mb-4">🚧</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          {formName} Form
-        </h2>
-        <p className="text-gray-600 mb-6">
-          This comprehensive form is currently being implemented with all relevant fields for data input.
-        </p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-          <p className="text-blue-800 text-sm">
-            <strong>Coming Soon:</strong> Full implementation with validation, real-time integration capabilities, and form data management.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderActiveForm = () => {
     switch (activeForm) {
       case 'summary':
@@ -79,7 +61,7 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
       case 'test-automation':
         return <TestAutomationForm />;
       case 'performance-testing':
-        return <PlaceholderForm formName="Performance Testing" />;
+        return <PerformanceTestingForm />;
       case 'security-testing':
         return <SecurityTestingForm />;
       default:
