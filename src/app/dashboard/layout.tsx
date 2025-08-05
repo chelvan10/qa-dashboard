@@ -3,6 +3,7 @@
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { RealTimeToggle } from "@/components/ui/RealTimeToggle";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -27,5 +28,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!authenticated) {
     return null;
   }
-  return <>{children}</>;
+  
+  return (
+    <div className="relative">
+      {children}
+      <RealTimeToggle />
+    </div>
+  );
 }

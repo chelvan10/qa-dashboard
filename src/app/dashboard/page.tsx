@@ -71,9 +71,6 @@ export default function Dashboard() {
 
   // Check if user is authenticated (either via session or demo)
   const isAuthenticated = session || demoSession;
-  const sessionWithRole = session as typeof session & { user?: { role?: string } };
-  const userRole = sessionWithRole?.user?.role || demoSession?.role || activeRole; // Used for role determination
-  const userEmail = session?.user?.email || demoSession?.email || 'Demo User'; // Used for display
 
   if (!isAuthenticated) {
     return (
@@ -119,18 +116,9 @@ export default function Dashboard() {
   // Render dashboard content based on active tab
   const renderDashboardContent = () => {
     if (viewMode === 'form') {
-      return (
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Data Entry Form - {availableTabs.find(tab => tab.id === activeTab)?.name}
-          </h2>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <p className="text-blue-800">
-              📝 Data entry form for {activeTab} is coming soon. This will allow authorized users to update metrics and data for this section.
-            </p>
-          </div>
-        </div>
-      );
+      // Redirect to dedicated forms page
+      router.push('/dashboard/forms');
+      return null;
     }
 
     switch (activeTab) {
@@ -205,8 +193,17 @@ export default function Dashboard() {
               <span className="text-sm text-blue-700">•</span>
               <span className="text-sm text-blue-700">{roleAccess[activeRole].focus}</span>
             </div>
-            <div className="text-sm text-blue-700">
-              {availableTabs.length} dashboard{availableTabs.length !== 1 ? 's' : ''} available
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-blue-700">
+                {availableTabs.length} dashboard{availableTabs.length !== 1 ? 's' : ''} available
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-blue-700">
+                <span>📝</span>
+                <span>Forms</span>
+                <span>•</span>
+                <span>🔄</span>
+                <span>Real-time Integration</span>
+              </div>
             </div>
           </div>
         </div>
