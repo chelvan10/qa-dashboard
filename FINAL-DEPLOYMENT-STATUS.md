@@ -103,7 +103,8 @@ To enable Google OAuth for real users:
 **The dashboard is now permanently deployed and fully functional!**
 
 ### **🌐 External URL Access:**
-**NEW Production URL:** https://qa-dashboard-ii2di2z25-aris-projects-a3f8f39e.vercel.app
+**Production URL (CI/CD Deployed):** https://qa-dashboard-six.vercel.app  
+**Manual Deploy URL:** https://qa-dashboard-ii2di2z25-aris-projects-a3f8f39e.vercel.app
 **Previous URL:** https://qa-dashboard-2p7qdmwhb-aris-projects-a3f8f39e.vercel.app (old version)
 
 ### **📊 Implementation Status:**
