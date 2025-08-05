@@ -39,7 +39,11 @@ export function SummaryDashboardForm({
     // Business Impact
     productionIncidents: initialData?.productionIncidents || 3,
     qualityDebtScore: initialData?.qualityDebtScore || 23,
-    teamProductivityIndex: initialData?.teamProductivityIndex || 91
+    teamProductivityIndex: initialData?.teamProductivityIndex || 91,
+    
+    // Summary Dashboard Specific Fields
+    recentAchievements: initialData?.recentAchievements || '',
+    keyFocus: initialData?.keyFocus || '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +102,7 @@ export function SummaryDashboardForm({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof SummaryFormData, value: number) => {
+    const handleInputChange = (field: keyof SummaryFormData, value: number | string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -106,13 +110,9 @@ export function SummaryDashboardForm({
       lastModifiedBy: 'current-user'
     }));
     
-    // Clear error for this field when user starts typing
+    // Clear any existing errors for this field
     if (errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -168,7 +168,7 @@ export function SummaryDashboardForm({
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="border-b border-gray-200 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Summary Dashboard Data Form</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Summary</h2>
         <p className="text-gray-600 mt-2">
           Configure key performance indicators and strategic metrics for the executive summary dashboard.
         </p>
@@ -446,6 +446,46 @@ export function SummaryDashboardForm({
               {errors.teamProductivityIndex && (
                 <p className="text-red-500 text-sm mt-1">{errors.teamProductivityIndex}</p>
               )}
+            </div>
+          </div>
+        </section>
+
+        {/* Summary Specific Section */}
+        <section>
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 border-l-4 border-purple-500 pl-4">
+            Summary Information
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Recent Achievements
+              </label>
+              <textarea
+                rows={6}
+                value={formData.recentAchievements}
+                onChange={(e) => handleInputChange('recentAchievements', e.target.value)}
+                placeholder="Describe recent achievements, milestones, and successes..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Highlight key accomplishments, improvements, and positive outcomes
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Key Focus Areas
+              </label>
+              <textarea
+                rows={6}
+                value={formData.keyFocus}
+                onChange={(e) => handleInputChange('keyFocus', e.target.value)}
+                placeholder="Outline key focus areas, priorities, and strategic initiatives..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Define current priorities, upcoming initiatives, and areas of concentration
+              </p>
             </div>
           </div>
         </section>

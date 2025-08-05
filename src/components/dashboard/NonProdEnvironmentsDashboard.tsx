@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { MetricCard, ProgressBar } from '@/components/ui/SharedComponents';
 import { QEDashboardData } from '@/types/dashboard';
+import { PDFExportButton } from "@/components/ui/PDFExportButton";
 
 interface NonProdEnvironmentsDashboardProps {
   data: QEDashboardData;
 }
 
 const NonProdEnvironmentsDashboard: React.FC<NonProdEnvironmentsDashboardProps> = ({ data }) => {
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { nonProdEnvironments } = data;
 
   const getEnvironmentStatusColor = (status: string) => {
@@ -30,7 +32,7 @@ const NonProdEnvironmentsDashboard: React.FC<NonProdEnvironmentsDashboardProps> 
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={dashboardRef} className="relative space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <MetricCard
@@ -208,6 +210,11 @@ const NonProdEnvironmentsDashboard: React.FC<NonProdEnvironmentsDashboardProps> 
             <span className="text-sm text-gray-700">Maintenance - Scheduled maintenance or updates in progress</span>
           </div>
         </div>
+      </div>
+
+      {/* PDF Export Button */}
+      <div className="absolute bottom-4 right-4">
+        <PDFExportButton targetRef={dashboardRef} fileName="nonprod-environments-dashboard.pdf" />
       </div>
     </div>
   );

@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import { SummaryDashboardForm } from './SummaryDashboardForm';
 import { QECapabilityForm } from './QECapabilityForm';
+import { NonProdEnvironmentsForm } from './NonProdEnvironmentsForm';
+import { FunctionalTestingForm } from './FunctionalTestingForm';
+import { TestAutomationForm } from './TestAutomationForm';
+import { SecurityTestingForm } from './SecurityTestingForm';
 
 // Form type definitions
 export type FormType = 
@@ -25,11 +29,11 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
   const formTabs = [
     { id: 'summary', name: 'Summary Dashboard', icon: '📊', implemented: true },
     { id: 'qe-capability', name: 'QE Capability', icon: '🎯', implemented: true },
-    { id: 'non-prod-environments', name: 'Non-Prod Environments', icon: '🖥️', implemented: false },
-    { id: 'functional-testing', name: 'Functional Testing', icon: '🧪', implemented: false },
+    { id: 'non-prod-environments', name: 'Non-Prod Environments', icon: '🖥️', implemented: true },
+    { id: 'functional-testing', name: 'Functional Testing', icon: '🧪', implemented: true },
     { id: 'test-automation', name: 'Test Automation', icon: '🤖', implemented: false },
     { id: 'performance-testing', name: 'Performance Testing', icon: '⚡', implemented: false },
-    { id: 'security-testing', name: 'Security Testing', icon: '🔒', implemented: false },
+    { id: 'security-testing', name: 'Security Testing', icon: '🔒', implemented: true },
   ] as const;
 
   const handleTabChange = (formType: FormType) => {
@@ -69,15 +73,15 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
       case 'qe-capability':
         return <QECapabilityForm />;
       case 'non-prod-environments':
-        return <PlaceholderForm formName="Non-Prod Environments" />;
+        return <NonProdEnvironmentsForm />;
       case 'functional-testing':
-        return <PlaceholderForm formName="Functional Testing" />;
+        return <FunctionalTestingForm />;
       case 'test-automation':
-        return <PlaceholderForm formName="Test Automation" />;
+        return <TestAutomationForm />;
       case 'performance-testing':
         return <PlaceholderForm formName="Performance Testing" />;
       case 'security-testing':
-        return <PlaceholderForm formName="Security Testing" />;
+        return <SecurityTestingForm />;
       default:
         return <SummaryDashboardForm />;
     }

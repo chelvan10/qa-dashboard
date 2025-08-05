@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -16,6 +16,7 @@ import {
 } from 'chart.js';
 import { MetricCard } from '@/components/ui/SharedComponents';
 import { QEDashboardData } from '@/types/dashboard';
+import { PDFExportButton } from "@/components/ui/PDFExportButton";
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +35,7 @@ interface FunctionalTestingDashboardProps {
 }
 
 const FunctionalTestingDashboard: React.FC<FunctionalTestingDashboardProps> = ({ data }) => {
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { functionalTesting } = data;
 
   // Top 10 KPIs for Functional Testing
@@ -213,7 +215,7 @@ const FunctionalTestingDashboard: React.FC<FunctionalTestingDashboardProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={dashboardRef} className="relative space-y-6">
       {/* Top 10 KPIs Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {functionalKPIs.map((kpi, index) => (
@@ -327,6 +329,11 @@ const FunctionalTestingDashboard: React.FC<FunctionalTestingDashboardProps> = ({
             <p className="text-sm text-orange-700">Avg Sprint Velocity</p>
           </div>
         </div>
+      </div>
+
+      {/* PDF Export Button */}
+      <div className="absolute bottom-4 right-4">
+        <PDFExportButton targetRef={dashboardRef} fileName="functional-testing-dashboard.pdf" />
       </div>
     </div>
   );

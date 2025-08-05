@@ -1,18 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { MetricCard, StatusBadge } from '@/components/ui/SharedComponents';
 import { QEDashboardData } from '@/types/dashboard';
+import { PDFExportButton } from "@/components/ui/PDFExportButton";
 
 interface SummaryDashboardProps {
   data: QEDashboardData;
 }
 
 const SummaryDashboard: React.FC<SummaryDashboardProps> = ({ data }) => {
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { summary } = data;
 
   return (
-    <div className="space-y-6">
+    <div ref={dashboardRef} className="space-y-6 relative">
       {/* Keynote Banner */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg text-white p-8">
         <div className="max-w-4xl">
@@ -164,6 +166,11 @@ const SummaryDashboard: React.FC<SummaryDashboardProps> = ({ data }) => {
             <p className="text-sm text-gray-600">Days Lead Time</p>
           </div>
         </div>
+      </div>
+
+      {/* PDF Export Button - Positioned Bottom Right */}
+      <div className="absolute bottom-4 right-4">
+        <PDFExportButton targetRef={dashboardRef} fileName="summary-dashboard.pdf" />
       </div>
     </div>
   );

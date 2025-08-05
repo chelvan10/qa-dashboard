@@ -27,6 +27,10 @@ export interface SummaryFormData extends BaseFormData {
   productionIncidents: number;
   qualityDebtScore: number; // 0-100
   teamProductivityIndex: number; // 0-100
+  
+  // Summary Dashboard Specific Fields
+  recentAchievements: string; // text area for recent achievements
+  keyFocus: string; // text area for key focus areas
 }
 
 // QE Capability Form Data
@@ -53,10 +57,6 @@ export interface QECapabilityFormData extends BaseFormData {
 }
 
 // Non-Prod Environments Form Data
-export interface NonProdEnvironmentsFormData extends BaseFormData {
-  environments: EnvironmentData[];
-}
-
 export interface EnvironmentData {
   name: string;
   type: 'dev' | 'test' | 'staging' | 'uat' | 'pre-prod';
@@ -79,55 +79,108 @@ export interface EnvironmentData {
   smokeTestResults: 'pass' | 'fail' | 'pending';
 }
 
-// Functional Testing Form Data
-export interface FunctionalTestingFormData extends BaseFormData {
-  applications: ApplicationTestData[];
-  squadPerformance: SquadPerformanceData[];
-  defectTrends: DefectTrendData;
+export interface NonProdEnvironmentsFormData extends BaseFormData {
+  environments: EnvironmentData[];
 }
 
+// Functional Testing Form Data
 export interface ApplicationTestData {
+  id: string;
   name: string;
-  sprintVersion: string;
-  status: 'on-track' | 'at-risk' | 'delayed' | 'completed';
-  
-  // Test Coverage
-  uiTestCoverage: number; // percentage
-  apiTestCoverage: number; // percentage
-  databaseTestCoverage: number; // percentage
-  overallTestCoverage: number; // percentage
-  
-  // Test Execution
-  totalTestCases: number;
-  executedTestCases: number;
-  passedTestCases: number;
-  failedTestCases: number;
-  blockedTestCases: number;
-  
-  // Quality Metrics
-  defectDensity: number; // defects per kloc
-  testEfficiency: number; // percentage
-  automationCoverage: number; // percentage
+  testsPassed: number;
+  testsFailed: number;
+  testsTotal: number;
+  passRate: number;
+  avgExecutionTime: number;
+  lastRun: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: 'stable' | 'unstable' | 'maintenance' | 'deprecated';
 }
 
 export interface SquadPerformanceData {
-  squadName: string;
-  testCasesExecuted: number;
-  testCasesPassed: number;
-  testCasesFailed: number;
-  automationRate: number; // percentage
-  velocity: number; // story points
+  id: string;
+  name: string;
+  passRate: number;
+  velocity: number;
+  blockers: number;
+  testsExecuted: number;
+  defectsFound: number;
 }
 
 export interface DefectTrendData {
-  newDefects: number[];
-  resolvedDefects: number[];
-  openDefects: number[];
-  criticalDefects: number[];
-  weeks: string[];
+  totalDefects: number;
+  criticalDefects: number;
+  highDefects: number;
+  mediumDefects: number;
+  lowDefects: number;
+  resolvedDefects: number;
+  openDefects: number;
+  avgResolutionTime: number;
+  defectsByCategory: {
+    ui: number;
+    functionality: number;
+    performance: number;
+    security: number;
+    integration: number;
+  };
+}
+
+export interface TestCoverageData {
+  unitTests: number;
+  integrationTests: number;
+  e2eTests: number;
+  apiTests: number;
+  uiTests: number;
+  regressionTests: number;
+  smokeTests: number;
+  overallCoverage: number;
+  codebaseCoverage: {
+    frontend: number;
+    backend: number;
+    mobile: number;
+    shared: number;
+  };
+}
+
+export interface ExecutionMetricsData {
+  totalTestsExecuted: number;
+  passedTests: number;
+  failedTests: number;
+  skippedTests: number;
+  avgExecutionTime: number;
+  parallelExecutionEfficiency: number;
+  testEnvironmentUptime: number;
+  flakinessFactor: number;
+}
+
+export interface QualityMetricsData {
+  testCaseEffectiveness: number;
+  bugDetectionRate: number;
+  falsePositiveRate: number;
+  testMaintenanceEffort: number;
+  testDataQuality: number;
+  environmentStability: number;
+}
+
+export interface FunctionalTestingFormData extends BaseFormData {
+  applications: ApplicationTestData[];
+  squads: SquadPerformanceData[];
+  defectTrends: DefectTrendData;
+  testCoverage: TestCoverageData;
+  executionMetrics: ExecutionMetricsData;
+  qualityMetrics: QualityMetricsData;
 }
 
 // Test Automation Form Data
+export interface AutomationFrameworkData {
+  name: string;
+  technology: string; // Selenium, Cypress, Playwright, etc.
+  testCount: number;
+  successRate: number; // percentage
+  avgExecutionTime: number; // minutes
+  maintenanceEffort: number; // hours per week
+}
+
 export interface TestAutomationFormData extends BaseFormData {
   // Coverage Metrics
   uiAutomationCoverage: number; // percentage
@@ -153,39 +206,7 @@ export interface TestAutomationFormData extends BaseFormData {
   frameworks: AutomationFrameworkData[];
 }
 
-export interface AutomationFrameworkData {
-  name: string;
-  technology: string; // Selenium, Cypress, Playwright, etc.
-  testCount: number;
-  successRate: number; // percentage
-  avgExecutionTime: number; // minutes
-  maintenanceEffort: number; // hours per week
-}
-
 // Performance Testing Form Data
-export interface PerformanceTestingFormData extends BaseFormData {
-  // Response Time Metrics
-  apiEndpoints: ApiPerformanceData[];
-  
-  // System Performance
-  peakConcurrentUsers: number;
-  averageResponseTime: number; // milliseconds
-  p95ResponseTime: number; // milliseconds
-  p99ResponseTime: number; // milliseconds
-  
-  // Resource Utilization
-  cpuUtilization: number; // percentage under load
-  memoryUtilization: number; // percentage under load
-  networkThroughput: number; // mbps
-  diskIOPS: number;
-  
-  // Performance Test Scenarios
-  scenarios: PerformanceScenarioData[];
-  
-  // SLA Metrics
-  slaTargets: SLATargetData[];
-}
-
 export interface ApiPerformanceData {
   endpoint: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -214,29 +235,30 @@ export interface SLATargetData {
   trend: 'improving' | 'stable' | 'degrading';
 }
 
-// Security Testing Form Data
-export interface SecurityTestingFormData extends BaseFormData {
-  // Vulnerability Distribution
-  criticalVulnerabilities: number;
-  highVulnerabilities: number;
-  mediumVulnerabilities: number;
-  lowVulnerabilities: number;
+export interface PerformanceTestingFormData extends BaseFormData {
+  // Response Time Metrics
+  apiEndpoints: ApiPerformanceData[];
   
-  // Trends
-  vulnerabilitiesFound: number[];
-  vulnerabilitiesResolved: number[];
-  weeks: string[];
+  // System Performance
+  peakConcurrentUsers: number;
+  averageResponseTime: number; // milliseconds
+  p95ResponseTime: number; // milliseconds
+  p99ResponseTime: number; // milliseconds
   
-  // Security Tools Performance
-  tools: SecurityToolData[];
+  // Resource Utilization
+  cpuUtilization: number; // percentage under load
+  memoryUtilization: number; // percentage under load
+  networkThroughput: number; // mbps
+  diskIOPS: number;
   
-  // Security Posture
-  securityPosture: SecurityPostureData;
+  // Performance Test Scenarios
+  scenarios: PerformanceScenarioData[];
   
-  // Compliance
-  complianceMetrics: ComplianceData[];
+  // SLA Metrics
+  slaTargets: SLATargetData[];
 }
 
+// Security Testing Form Data
 export interface SecurityToolData {
   name: string;
   type: 'SAST' | 'DAST' | 'IAST' | 'SCA' | 'Container' | 'Infrastructure';
@@ -262,6 +284,28 @@ export interface ComplianceData {
   score: number; // 0-100
   lastAudit: Date;
   nextAudit: Date;
+}
+
+export interface SecurityTestingFormData extends BaseFormData {
+  // Vulnerability Distribution
+  criticalVulnerabilities: number;
+  highVulnerabilities: number;
+  mediumVulnerabilities: number;
+  lowVulnerabilities: number;
+  
+  // Trends
+  vulnerabilitiesFound: number[];
+  vulnerabilitiesResolved: number[];
+  weeks: string[];
+  
+  // Security Tools Performance
+  tools: SecurityToolData[];
+  
+  // Security Posture
+  securityPosture: SecurityPostureData;
+  
+  // Compliance
+  complianceMetrics: ComplianceData[];
 }
 
 // Real-time Integration Configuration

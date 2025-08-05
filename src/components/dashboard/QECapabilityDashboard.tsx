@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Radar, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -17,6 +17,7 @@ import {
 } from 'chart.js';
 import { MetricCard, StatusBadge } from '@/components/ui/SharedComponents';
 import { QEDashboardData } from '@/types/dashboard';
+import { PDFExportButton } from "@/components/ui/PDFExportButton";
 
 ChartJS.register(
   CategoryScale,
@@ -36,6 +37,7 @@ interface QECapabilityDashboardProps {
 }
 
 const QECapabilityDashboard: React.FC<QECapabilityDashboardProps> = ({ data }) => {
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { qeCapability } = data;
 
   // KPI Cards Data
@@ -169,7 +171,7 @@ const QECapabilityDashboard: React.FC<QECapabilityDashboardProps> = ({ data }) =
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={dashboardRef} className="relative space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpiCards.map((kpi, index) => (
@@ -261,6 +263,11 @@ const QECapabilityDashboard: React.FC<QECapabilityDashboardProps> = ({ data }) =
             <p className="text-sm text-gray-600">Target state - 95%</p>
           </div>
         </div>
+      </div>
+
+      {/* PDF Export Button - Positioned absolutely in the bottom right corner */}
+      <div className="absolute bottom-4 right-4">
+        <PDFExportButton targetRef={dashboardRef} fileName="qe-capability-dashboard.pdf" />
       </div>
     </div>
   );
