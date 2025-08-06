@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SummaryFormData } from '@/types/forms';
 import { dataManager } from '@/lib/dataManager';
+import { database } from '@/lib/database';
 
 interface SummaryDashboardFormProps {
   onSave?: (data: SummaryFormData) => void;
@@ -10,53 +11,111 @@ interface SummaryDashboardFormProps {
   initialData?: Partial<SummaryFormData>;
 }
 
+// Default form data to avoid dependency issues
+const getDefaultFormData = (initialData?: Partial<SummaryFormData>): SummaryFormData => ({
+  id: initialData?.id || `summary-${Date.now()}`,
+  createdAt: initialData?.createdAt || new Date(),
+  updatedAt: new Date(),
+  createdBy: initialData?.createdBy || 'current-user',
+  lastModifiedBy: 'current-user',
+  
+  // Executive KPIs
+  overallQualityScore: initialData?.overallQualityScore || 85,
+  defectEscapeRate: initialData?.defectEscapeRate || 2.5,
+  testCoverage: initialData?.testCoverage || 78,
+  releaseVelocity: initialData?.releaseVelocity || 12,
+  customerSatisfactionScore: initialData?.customerSatisfactionScore || 87,
+  
+  // Strategic Metrics
+  qualityGateComplianceRate: initialData?.qualityGateComplianceRate || 92,
+  automationROI: initialData?.automationROI || 340,
+  meanTimeToDetection: initialData?.meanTimeToDetection || 4.2,
+  meanTimeToResolution: initialData?.meanTimeToResolution || 18.5,
+  regressionTestEfficiency: initialData?.regressionTestEfficiency || 89,
+  
+  // Business Impact
+  productionIncidents: initialData?.productionIncidents || 3,
+  qualityDebtScore: initialData?.qualityDebtScore || 23,
+  teamProductivityIndex: initialData?.teamProductivityIndex || 91,
+  
+  // Summary Dashboard Specific Fields
+  recentAchievements: initialData?.recentAchievements || '',
+  keyFocus: initialData?.keyFocus || '',
+});
+
 export function SummaryDashboardForm({ 
   onSave, 
   onCancel, 
   initialData 
 }: SummaryDashboardFormProps) {
-  const [formData, setFormData] = useState<SummaryFormData>({
-    id: initialData?.id || `summary-${Date.now()}`,
-    createdAt: initialData?.createdAt || new Date(),
-    updatedAt: new Date(),
-    createdBy: initialData?.createdBy || 'current-user',
-    lastModifiedBy: 'current-user',
-    
-    // Executive KPIs
-    overallQualityScore: initialData?.overallQualityScore || 85,
-    defectEscapeRate: initialData?.defectEscapeRate || 2.5,
-    testCoverage: initialData?.testCoverage || 78,
-    releaseVelocity: initialData?.releaseVelocity || 12,
-    customerSatisfactionScore: initialData?.customerSatisfactionScore || 87,
-    
-    // Strategic Metrics
-    qualityGateComplianceRate: initialData?.qualityGateComplianceRate || 92,
-    automationROI: initialData?.automationROI || 340,
-    meanTimeToDetection: initialData?.meanTimeToDetection || 4.2,
-    meanTimeToResolution: initialData?.meanTimeToResolution || 18.5,
-    regressionTestEfficiency: initialData?.regressionTestEfficiency || 89,
-    
-    // Business Impact
-    productionIncidents: initialData?.productionIncidents || 3,
-    qualityDebtScore: initialData?.qualityDebtScore || 23,
-    teamProductivityIndex: initialData?.teamProductivityIndex || 91,
-    
-    // Summary Dashboard Specific Fields
-    recentAchievements: initialData?.recentAchievements || '',
-    keyFocus: initialData?.keyFocus || '',
-  });
+  const [formData, setFormData] = useState<SummaryFormData>(() => getDefaultFormData(initialData));
 
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saveHistory, setSaveHistory] = useState<Array<{ timestamp: Date; id: string }>>([]);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
+  // Load existing data on mount
   useEffect(() => {
-    // Load existing form data if available
-    if (dataManager) {
-      const existingData = dataManager.getFormData('summary');
-      if (existingData && !initialData) {
-        setFormData(existingData as SummaryFormData);
+    const loadExistingData = async () => {
+      try {
+        // Load from new database system
+        const latestRecord = await database.getLatestFormData('summary');
+        if (latestRecord && latestRecord.data) {
+          // Safely convert the saved data to SummaryFormData
+          const savedData = latestRecord.data as Record<string, unknown>;
+          const compatibleData: Partial<SummaryFormData> = {};
+          
+          // Get the default form structure to check against
+          const defaultData = getDefaultFormData(initialData);
+          
+          // Only merge compatible fields that exist in both objects
+          (Object.keys(defaultData) as Array<keyof SummaryFormData>).forEach(key => {
+            if (key in savedData && typeof savedData[key] === typeof defaultData[key]) {
+              (compatibleData as Record<string, unknown>)[key] = savedData[key];
+            }
+          });
+          
+          setFormData(prev => ({ ...prev, ...compatibleData }));
+          setLastSavedAt(new Date(latestRecord.timestamp));
+        }
+        
+        // Load save history
+        const allRecords = await database.getFormData({ type: 'summary', limit: 10 });
+        const history = allRecords.map(record => ({
+          timestamp: new Date(record.timestamp),
+          id: record.id
+        }));
+        setSaveHistory(history);
+        
+        // Fallback to dataManager for backward compatibility
+        if (!latestRecord && dataManager) {
+          const existingData = dataManager.getFormData('summary');
+          if (existingData && typeof existingData === 'object') {
+            // Only merge compatible fields - use safer type checking
+            const compatibleFields: Partial<SummaryFormData> = {};
+            
+            // Check if the data has the expected structure
+            try {
+              const existingRecord = existingData as unknown as Record<string, unknown>;
+              const defaultData = getDefaultFormData(initialData);
+              (Object.keys(defaultData) as Array<keyof SummaryFormData>).forEach(key => {
+                if (key in existingRecord && typeof existingRecord[key] === typeof defaultData[key]) {
+                  (compatibleFields as Record<string, unknown>)[key] = existingRecord[key];
+                }
+              });
+              setFormData(prev => ({ ...prev, ...compatibleFields }));
+            } catch {
+              console.log('Could not load legacy data format, skipping...');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load existing data:', error);
       }
-    }
+    };
+
+    loadExistingData();
   }, [initialData]);
 
   const validateForm = (): boolean => {
@@ -125,18 +184,28 @@ export function SummaryDashboardForm({
 
     setIsLoading(true);
     try {
-      // Save to data manager
+      // Save to new database system with timestamp
+      const recordId = await database.saveFormData('summary', formData as unknown as { [key: string]: unknown }, {
+        source: 'manual',
+        userId: 'current-user'
+      });
+      
+      // Also save to existing data manager for backward compatibility
       if (dataManager) {
         dataManager.saveFormData('summary', formData);
       }
       
+      // Update local state
+      setLastSavedAt(new Date());
+      setSaveHistory(prev => [...prev, { timestamp: new Date(), id: recordId }]);
+      
       // Call parent callback
       onSave?.(formData);
       
-      alert('Summary dashboard data saved successfully!');
+      alert(`Summary dashboard data saved successfully!\nRecord ID: ${recordId}\nTimestamp: ${new Date().toLocaleString()}`);
     } catch (error) {
       console.error('Failed to save summary data:', error);
-      alert('Failed to save data. Please try again.');
+      setErrors({ submit: 'Failed to save data. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -489,6 +558,41 @@ export function SummaryDashboardForm({
             </div>
           </div>
         </section>
+
+        {/* Save History and Timestamps */}
+        {(lastSavedAt || saveHistory.length > 0) && (
+          <section className="bg-gray-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 border-l-4 border-green-500 pl-4">
+              💾 Save History & Timestamps
+            </h3>
+            
+            {lastSavedAt && (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm font-medium text-green-800">
+                  ✅ Last Saved: {lastSavedAt.toLocaleString()}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  Data successfully stored with timestamp in local database
+                </p>
+              </div>
+            )}
+            
+            {saveHistory.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Saves:</h4>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {saveHistory.slice(-5).reverse().map((save, index) => (
+                    <div key={save.id} className="flex items-center justify-between text-xs text-gray-600 bg-white p-2 rounded border">
+                      <span>Save #{saveHistory.length - index}</span>
+                      <span>{save.timestamp.toLocaleString()}</span>
+                      <span className="font-mono text-blue-600">{save.id.slice(-8)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Form Actions */}
         <div className="flex items-center justify-between pt-6 border-t border-gray-200">

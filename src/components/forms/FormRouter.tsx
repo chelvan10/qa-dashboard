@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { NavigationHeader } from '../ui/NavigationHeader';
-import { CompactRealTimeToggle } from '../ui/CompactRealTimeToggle';
 import { SummaryDashboardForm } from './SummaryDashboardForm';
 import { QECapabilityForm } from './QECapabilityForm';
 import { NonProdEnvironmentsForm } from './NonProdEnvironmentsForm';
@@ -28,7 +26,6 @@ interface FormRouterProps {
 
 export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouterProps) {
   const [activeForm, setActiveForm] = useState<FormType>(initialForm);
-  const [isRealTime, setIsRealTime] = useState(false);
 
   const formTabs = [
     { id: 'summary', name: 'Summary Dashboard', icon: '📊', implemented: true },
@@ -74,20 +71,6 @@ export function FormRouter({ initialForm = 'summary', onFormChange }: FormRouter
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Header */}
-      <NavigationHeader
-        title="Data Management Forms"
-        subtitle="Enter and manage QE data across all domains"
-        showBackButton={true}
-        backUrl="/dashboard"
-        backLabel="Back to Dashboard"
-      >
-        <CompactRealTimeToggle
-          isRealTime={isRealTime}
-          onToggle={setIsRealTime}
-        />
-      </NavigationHeader>
-
       {/* Form Navigation Tabs */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

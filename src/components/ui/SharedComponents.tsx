@@ -252,8 +252,3 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({
     </div>
   );
 };
-
-// Export navigation components
-export { NavigationHeader } from './NavigationHeader';
-export { CompactRealTimeToggle } from './CompactRealTimeToggle';
-export { ProjectSprintSelector, type Project, type Sprint } from './ProjectSprintSelector';

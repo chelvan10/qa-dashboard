@@ -98,7 +98,7 @@ export function TestAutomationForm({
       if (onSave) {
         onSave(formData);
       }
-    } catch (error) {
+    } catch {
       setErrors({ submit: "Failed to save form data. Please try again." });
     } finally {
       setIsLoading(false);
