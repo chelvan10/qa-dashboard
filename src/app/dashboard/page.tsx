@@ -7,8 +7,8 @@ import { TabNavigation, ViewModeToggle } from '@/components/ui/SharedComponents'
 import SummaryDashboard from '@/components/dashboard/SummaryDashboard';
 import QECapabilityDashboard from '@/components/dashboard/QECapabilityDashboard';
 import NonProdEnvironmentsDashboard from '@/components/dashboard/NonProdEnvironmentsDashboard';
-import FunctionalTestingDashboard from '@/components/dashboard/FunctionalTestingDashboard';
-import TestAutomationDashboard from '@/components/dashboard/TestAutomationDashboard';
+import EnhancedFunctionalTestingDashboard from '@/components/dashboard/EnhancedFunctionalTestingDashboard';
+import EnhancedTestAutomationDashboard from '@/components/dashboard/EnhancedTestAutomationDashboard';
 import PerformanceTestingDashboard from '@/components/dashboard/PerformanceTestingDashboard';
 import SecurityTestingDashboard from '@/components/dashboard/SecurityTestingDashboard';
 import { mockQEData, roleAccess } from '@/lib/mockData';
@@ -129,9 +129,9 @@ export default function Dashboard() {
       case 'nonProdEnvironments':
         return <NonProdEnvironmentsDashboard data={mockQEData} />;
       case 'functionalTesting':
-        return <FunctionalTestingDashboard data={mockQEData} />;
+        return <EnhancedFunctionalTestingDashboard data={mockQEData} />;
       case 'testAutomation':
-        return <TestAutomationDashboard data={mockQEData} />;
+        return <EnhancedTestAutomationDashboard data={mockQEData} />;
       case 'performanceTesting':
         return <PerformanceTestingDashboard data={mockQEData} />;
       case 'securityTesting':
